@@ -6,7 +6,7 @@ import {Link} from "expo-router"
 const Subscriptions = () => {
     return (
         <View>
-            <Text>Sign in</Text>
+            <Text>Subscriptions</Text>
             <Link href="/(auth)/sign-up">Creat account</Link>
         </View>
     )
