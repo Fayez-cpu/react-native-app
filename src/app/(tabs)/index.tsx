@@ -11,6 +11,9 @@ export default function App() {
       </Text>
       <Link href="/(auth)/sign-up" className="mt-4 rounded bg-primary text-white p-4">Sign up</Link>
       <Link href="/subscriptions/spotify" className="mt-4 rounded bg-primary text-white p-4">Spotify Subscription</Link>
+      <Text className="mt-4 text-center text-sm text-muted-foreground">
+        Edit <Text className="font-mono font-bold">src/app/(tabs)/index.tsx</Text> to customize this screen.
+      </Text>
     </SafeAreaView>
   );
 }
