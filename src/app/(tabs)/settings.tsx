@@ -1,14 +1,15 @@
-import {View, Text} from 'react-native'
-import React from 'react'
-import {Link} from "expo-router"
+import { Link } from "expo-router";
+import { Text } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 const Settings = () => {
     return (
-        <View>
-            <Text>Sign in</Text>
-            <Link href="/(auth)/sign-up">Creat account</Link>
-        </View>
+        <SafeAreaView>
+            <Text>Sign in </Text>
+            <Text>This is settings </Text>
+            <Link href="/(auth)/sign-up">Create account</Link>
+        </SafeAreaView>
     )
 }
 
