@@ -1,17 +1,21 @@
 import ListHeading from "@/components/ListHeading";
+import SubscriptionCard from "@/components/SubscriptionCard";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
-import { HOME_BALANCE, HOME_USER, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
+import { HOME_BALANCE, HOME_SUBSCRIPTIONS, HOME_USER, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
 import { icons } from "@/constants/icons";
 import images from "@/constants/images";
 import "@/global.css";
 import { formatCurrency } from "@/lib/utils";
 import dayjs from "dayjs";
-import { Image, Text, View } from "react-native";
+import { useState } from "react";
+import { FlatList, Image, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
  
 export default function App() {
+  const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
   return (
     <SafeAreaView className="flex-1 bg-background p-5">
+      <ScrollView showsVerticalScrollIndicator={false}>
       <View className="home-header">
         <View className="home-user">
           <Image source={images.avatar} className="home-avatar" />
@@ -35,11 +39,32 @@ export default function App() {
 
       <View>
         <ListHeading title="Upcoming" />
-        <UpcomingSubscriptionCard data={UPCOMING_SUBSCRIPTIONS[0]} />
+        <FlatList 
+          data={UPCOMING_SUBSCRIPTIONS} renderItem={({item}) => ( 
+            <UpcomingSubscriptionCard {... item} />)} 
+            keyExtractor={(item) => item.id}
+            horizontal
+            nestedScrollEnabled={true}
+            showsHorizontalScrollIndicator={false}
+            ListEmptyComponent={<Text className="home-empty-state">No upcoming renewals yet</Text>}
+          />
       </View>
       <View>
         <ListHeading title="All Subscriptions" />
+
+        {HOME_SUBSCRIPTIONS.length === 0 ? <View className="h-4" /> : 
+        HOME_SUBSCRIPTIONS.map((item) => (
+          <View key={item.id} className="mb-4">
+            <SubscriptionCard
+              {...item}
+              expanded={expandedSubscriptionId === item.id}
+              onPress={() => setExpandedSubscriptionId(expandedSubscriptionId === item.id ? null : item.id)}
+            />
+          </View>
+        ))}
+
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
