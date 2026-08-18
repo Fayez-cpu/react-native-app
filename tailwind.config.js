@@ -7,6 +7,23 @@ module.exports = {
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
+      spacing: {
+        18: "72px",
+        30: "120px",
+        50: "200px",
+      },
+      borderRadius: {
+        "4xl": "32px",
+      },
+      fontFamily: {
+        sans: ["sans-regular"],
+        "sans-light": ["sans-light"],
+        "sans-regular": ["sans-regular"],
+        "sans-medium": ["sans-medium"],
+        "sans-semibold": ["sans-semibold"],
+        "sans-bold": ["sans-bold"],
+        "sans-extrabold": ["sans-extrabold"],
+      },
       colors: {
         background: "#fff9e3",
         foreground: "#081126",
