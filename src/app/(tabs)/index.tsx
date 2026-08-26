@@ -1,25 +1,121 @@
 import ListHeading from "@/components/ListHeading";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
-import { HOME_BALANCE, HOME_SUBSCRIPTIONS, HOME_USER, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
+import { HOME_BALANCE, HOME_SUBSCRIPTIONS, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
 import { icons } from "@/constants/icons";
 import images from "@/constants/images";
 import "@/global.css";
+import { deleteAuthToken, getAuthToken } from "@/lib/auth-storage";
 import { formatCurrency } from "@/lib/utils";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import dayjs from "dayjs";
+import { router } from "expo-router";
 import { useState } from "react";
-import { FlatList, Image, ScrollView, Text, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
- 
+
 export default function App() {
+  const queryClient = useQueryClient()
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
+
+  const getUser = async () => {
+    const token = await getAuthToken()
+    console.log(token)
+    if (!token){
+      router.replace("/sign-in")
+      return null
+    }
+    const response = await fetch("https://my-app.app.runonflux.io/dashboard", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    })
+    if (response.status === 401){
+      await deleteAuthToken()
+      queryClient.clear()
+      router.replace("/sign-in")
+      return null
+    }
+    if (!response.ok){
+      throw new Error("Request failed")
+    }
+      const data = await response.json()
+      return data.user
+  }
+
+  const getDashboard = async () => {
+    
+  }
+
+  const {data : user, isLoading: isUserLoading, isError: isUserError, error, refetch} = useQuery({
+    queryKey: ["user"],
+    queryFn: getUser,
+    staleTime: 30 * 60 * 1000,
+    retry: false,
+  })
+
+  const {data: dashboardData, isLoading: isDashboardLoading, isError: isDashboardError,error: dashboardError, refetch: refetchDashboard} = useQuery({
+    queryKey: ["dashboardData"],
+    queryFn: getDashboard,
+    enabled: !!user,
+    staleTime: 15 * 60 * 1000
+  })  
+  const isLoading = isUserLoading || isDashboardLoading
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+  
+  if (isUserError) {
+    return (
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-center text-lg font-sans-bold">
+          We couldn't load your account
+        </Text>
+        <Text className="mt-2 text-center">
+          {error.message}
+        </Text>
+        <Pressable
+          className="mt-5 rounded-lg bg-primary px-5 py-3"
+          onPress={() => refetch()}
+        >
+          <Text className="font-sans-bold text-white">Try again</Text>
+        </Pressable>
+      </View>
+    );
+  }
+  
+  if (isDashboardError) {
+    return (
+      <View className="flex-1 items-center justify-center px-6">
+        <Text className="text-center text-lg font-sans-bold">
+          We couldn't load your account
+        </Text>
+        <Text className="mt-2 text-center">
+          {dashboardError.message}
+        </Text>
+        <Pressable
+          className="mt-5 rounded-lg bg-primary px-5 py-3"
+          onPress={() => refetchDashboard()}
+        >
+          <Text className="font-sans-bold text-white">Try again</Text>
+        </Pressable>
+      </View>
+    );
+  }  
+
   return (
     <SafeAreaView className="flex-1 bg-background p-5">
       <ScrollView showsVerticalScrollIndicator={false}>
       <View className="home-header">
         <View className="home-user">
           <Image source={images.avatar} className="home-avatar" />
-          <Text className="home-user-name">{HOME_USER.name}</Text>
+          <Text className="home-user-name">{user?.email}</Text>
         </View>
 
         <Image source={icons.add} className="home-add-icon" />
