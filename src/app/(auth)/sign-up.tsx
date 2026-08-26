@@ -1,3 +1,4 @@
+import { posthog } from "@/lib/posthog"
 import { Link } from "expo-router"
 import { useState } from "react"
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
@@ -31,6 +32,7 @@ const SignUp = () => {
             }
             const data = await response.json()
             if (response.status === 200){
+                posthog?.capture("account_signed_up")
                 Alert.alert("Sign-up Successful", "Your account has been created. Please sign in.")
             }
             console.log("Sign-up successful:", data)

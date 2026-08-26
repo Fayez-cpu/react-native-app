@@ -1,4 +1,5 @@
 import { saveAuthToken } from "@/lib/auth-storage"
+import { posthog } from "@/lib/posthog"
 import { Link, router } from "expo-router"
 import { useState } from "react"
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
@@ -32,6 +33,7 @@ const SignIn = () => {
             const data = await response.json()
             console.log(data)
             await saveAuthToken(data.token)
+            posthog?.capture("user_signed_in")
             setLoading(false)
             router.replace("/")
         } catch (error) {
