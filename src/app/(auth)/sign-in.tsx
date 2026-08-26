@@ -1,4 +1,5 @@
 import { saveAuthToken } from "@/lib/auth-storage"
+import { posthog } from "@/lib/posthog"
 import { useQueryClient } from "@tanstack/react-query"
 import { Link, router } from "expo-router"
 import { useState } from "react"
@@ -35,6 +36,7 @@ const SignIn = () => {
             await saveAuthToken(data.token)
             queryClient.clear()
             queryClient.setQueryData(["user"], data.user)
+            posthog?.capture("user_signed_in")
             setLoading(false)
             router.replace("/")
         } catch (error) {
