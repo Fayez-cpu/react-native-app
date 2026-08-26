@@ -4,10 +4,9 @@ import { deleteAuthToken, getAuthToken } from "@/lib/auth-storage";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { } from "expo-image";
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, router, Tabs } from "expo-router";
 import { ActivityIndicator, Image, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { router } from "expo-router";
 const tabBar = components.tabBar;
 
 interface TabIconProps {
@@ -60,12 +59,6 @@ export default function TabLayout() {
   });
 
   
-  const {data: dashboard, isLoading: isDashboardLoading} = useQuery({
-    queryKey: ["dashboardData"],
-    queryFn: getDashboard,
-    enabled: !!user,
-    staleTime: 15 * 60 * 1000
-  })
 
   if (isLoading) {
     return (
