@@ -1,10 +1,12 @@
 import { saveAuthToken } from "@/lib/auth-storage"
 import { posthog } from "@/lib/posthog"
+import { useQueryClient } from "@tanstack/react-query"
 import { Link, router } from "expo-router"
 import { useState } from "react"
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 
 const SignIn = () => {
+    const queryClient = useQueryClient()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
@@ -31,8 +33,9 @@ const SignIn = () => {
                 return
             }
             const data = await response.json()
-            console.log(data)
             await saveAuthToken(data.token)
+            queryClient.clear()
+            queryClient.setQueryData(["user"], data.user)
             posthog?.capture("user_signed_in")
             setLoading(false)
             router.replace("/")
