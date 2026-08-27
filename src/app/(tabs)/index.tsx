@@ -15,6 +15,9 @@ import { useState } from "react";
 import { ActivityIndicator, FlatList, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+/**
+ * Renders the welcome screen with navigation links for sign-up and Spotify subscriptions.
+ */
 export default function App() {
   const queryClient = useQueryClient()
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
